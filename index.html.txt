@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حسبك - مساعد المعلم القرآني</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🌿 حسبك</h1>
+    <p>مساعد المعلم القرآني لاختيار مواضع الاختبار</p>
+  </header>
+
+  <main>
+    <button id="generate">اختر موضعًا عشوائيًا</button>
+    <div id="result">اضغط الزر لاختيار الموضع</div>
+  </main>
+
+  <footer>
+    <p>© 2025 - موقع حسبك</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

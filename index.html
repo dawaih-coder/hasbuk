@@ -1,26 +1,375 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>حسبك - مساعد المعلم القرآني</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+<meta charset="UTF-8">
+<title>حَسْبُك – مساعد المعلم القرآني لاختيار مواضع الاختبار</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&display=swap" rel="stylesheet">
+<style>
+body { 
+  direction: rtl; 
+  background: linear-gradient(to bottom, #fefcfb, #e6f2e6); 
+  font-family: 'Cairo', sans-serif; 
+  padding: 20px; margin:0; color: #1b3d2f; text-align:center;
+}
+h1 { 
+  color: #0b3d91; font-family: 'Amiri', serif; font-size:70px; margin-bottom:15px; 
+  text-shadow: 1px 1px 3px #b5a642;
+}
+h2 { 
+  font-family: 'Amiri', serif; font-size:28px; text-align:center; color:#064420; 
+  margin-bottom:12px; border-bottom:2px solid #2f6f47; padding-bottom:6px;
+}
+
+/* جدول الأجزاء */
+.parts-table { 
+  width:100%; 
+  border-collapse: collapse; 
+  text-align:center;
+  font-size:24px;
+  table-layout: fixed;
+}
+.parts-table td { 
+  padding:10px; 
+  text-align:center; 
+  vertical-align:top; 
+  border:none;
+}
+
+/* مستطيلات الأجزاء */
+.part-box {
+  width: 120px;
+  height: 80px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border: 2px solid #2f6f47;
+  border-radius: 10px;
+  background: #fff8dc;
+  cursor: pointer;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.25);
+  margin: 6px auto;
+  transition: all 0.2s ease-in-out;
+}
+.part-box.selected {
+  background: #2f6f47;
+  color: #fff;
+  border: 2px solid #1b4f34;
+}
+
+/* خط خفيف بين كل صف */
+.parts-table tbody tr {
+  border-bottom: 1px solid #d4d4d4;
+}
+
+/* أزرار التحكم */
+.sub-btn { font-size:22px; padding:14px 20px; border-radius:8px; border:none; cursor:pointer; margin:8px 4px; color:#fff; font-weight:bold; width:200px; }
+.sub-btn.select { background:#2f6f47; }  
+.sub-btn.deselect { background:#a1260d; }  
+.sub-btn.select:hover { background:#1b4f34; }  
+.sub-btn.deselect:hover { background:#701609; } 
+
+#select-btn, #clear-btn, #print-btn { 
+  font-size:24px; padding:14px 24px; border-radius:8px; border:none; cursor:pointer; width:200px; height:55px; display:inline-block; margin:8px 6px;
+}
+#select-btn { background:#2f6f47; color:#fff; }  
+#clear-btn { background:#a1260d; color:#fff; }  
+#print-btn { background:#064420; color:#fff; }
+#select-btn:hover { background:#1b4f34; }  
+#clear-btn:hover { background:#701609; }  
+#print-btn:hover { background:#042e16; }
+
+#main-container { display:flex; gap:20px; justify-content:center; align-items:flex-start; }
+#parts-column { flex:0 0 460px; background:linear-gradient(to bottom, #d1ebd1, #f0f5f0); border-radius:12px; padding:15px; border:3px solid #2f6f47; box-shadow:2px 2px 8px rgba(47,111,71,0.4); }
+#results-column { flex:1; background:linear-gradient(to bottom, #fffbe6, #f0f5f0); border-radius:12px; padding:20px; border:3px solid #2f6f47; box-shadow:2px 2px 8px rgba(47,111,71,0.4); }
+
+#results-column table { width:100%; border-collapse:collapse; background:#fffbe6; border-radius:8px; overflow:hidden; border:1px solid #2f6f47; font-size:20px; }
+#results-column th, #results-column td { border:1px solid #d4d4d4; padding:10px 14px; text-align:center; font-weight:bold; }
+#results-column th { background:#2f6f47; color:#fff; font-size:18px; line-height:1.2; white-space:normal; }
+#results-body td { border-bottom:1px solid #2f6f47; padding:8px; text-align:center; font-size:18px; word-wrap: break-word; white-space:normal; }
+#results-body td:nth-child(3) { max-width:220px; text-align:center; }
+.image-btn { background-color:#064420; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:18px; }
+.image-btn:hover { background-color:#042e16; }
+
+#warning-box { display:none; color:#a00000; font-size:22px; font-weight:bold; text-align:center; margin:15px 0; border:1px solid #a00000; padding:10px; border-radius:6px; background:#ffe5e5; }
+
+@media (max-width:1200px){
+  #main-container{flex-direction:column; align-items:center;}
+  h1{font-size:50px;}
+  h2{font-size:24px;}
+  .part-box{width:90px; height:65px; font-size:22px;}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🌿 حسبك</h1>
-    <p>مساعد المعلم القرآني لاختيار مواضع الاختبار</p>
-  </header>
 
-  <main>
-    <button id="generate">اختر موضعًا عشوائيًا</button>
-    <div id="result">اضغط الزر لاختيار الموضع</div>
-  </main>
+<h1>حَسْبُك – مساعد المعلم القرآني لاختيار مواضع الاختبار</h1>
 
-  <footer>
-    <p>© 2025 - موقع حسبك</p>
-  </footer>
+<div id="main-container">
+  <!-- العمود الأول -->
+  <div id="parts-column">
 
-  <script src="script.js"></script>
+    <div style="margin-bottom:20px; text-align:center;">
+      <label for="savedPartsDropdown" style="font-size:26px; color:#064420; font-weight:bold;">عدد الأجزاء التي سيشارك فيها الطالب:</label>
+      <select id="savedPartsDropdown" style="margin-top:10px; padding:14px 20px; font-size:24px; border-radius:6px; border:1px solid #2f6f47; background:linear-gradient(to bottom, #d1ebd1, #f0f5f0); color:#064420; font-weight:bold; width:250px; text-align:center;"
+            onchange="updateSavedParts()">
+        <option value="">-- اختر --</option>
+        <script>for(let i=1;i<=30;i++){document.write(`<option value="${i}">${i}</option>`);}</script>
+      </select>
+    </div>
+
+<h2>الأجزاء 1 ← 30</h2>
+<div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:10px;">
+  <button id="toggleColBtn" class="sub-btn select" onclick="toggleParts(1,30,'toggleColBtn')">
+    تحديد الكل
+  </button>
+  <span style="font-size:22px; font-weight:bold; color:#064420;">(حدد الأجزاء المحفوظة)</span>
+</div>
+
+<!-- جدول الأجزاء -->
+<table class="parts-table" id="parts-container">
+  <tbody></tbody>
+</table>
+
+  </div>
+
+  <!-- العمود الثاني: النتائج -->
+  <div id="results-column">
+
+    <div id="warning-box">⚠️ العدد غير مطابق</div>
+
+    <div id="multi-select-container" style="margin-bottom: 15px; text-align:center; font-size:24px; font-weight:bold; color:#064420;">
+      <label for="numParts" style="font-size:24px;">عدد الأجزاء التي سيختبر فيها الطالب:</label>
+      <select id="numParts" style="margin-left:12px; padding:12px 18px; font-size:22px; border-radius:6px; border:1px solid #2f6f47; background:linear-gradient(to bottom, #d1ebd1, #f0f5f0); color:#064420; font-weight:bold; width:150px; text-align:center;">
+        <script>for(let i=1;i<=30;i++){document.write(`<option value="${i}">${i}</option>`);}</script>
+      </select>
+    </div>
+
+    <div style="margin-bottom:15px; text-align:center; font-size:22px; font-weight:bold; color:#064420;">
+      <label for="numPositions">عدد المواضع لكل جزء:</label>
+      <select id="numPositions" style="margin-left:10px; padding:8px 12px; font-size:20px; border-radius:6px; border:1px solid #2f6f47; background:#f0f5f0; color:#064420; font-weight:bold;">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </select>
+      <p style="font-size:16px; color:#a1260d; font-weight:normal; margin-top:6px; line-height:1.4;">
+        1: يتم اختيار موضع من كامل الجزء &nbsp;|&nbsp;
+        2: يتم اختيار موضع من كل حزب &nbsp;|&nbsp;
+        3: موضع من كل حزب وموضع إضافي
+      </p>
+    </div>
+
+    <div id="multi-select-container2" style="margin-bottom:15px; text-align:center;">
+      <button id="select-btn" onclick="selectRandomParts()" title="يمكن تغيير المواضع بالضغط مرة أخرى">عرض النتائج</button>
+      <button id="clear-btn" onclick="clearResults()">مسح النتائج</button>
+      <button id="print-btn" onclick="printTable()">🖨️ طباعة الجدول</button>
+    </div>
+
+    <div id="random-selection">
+      <h3 style="font-size:24px; color:#064420;">أجزاء الاختبار - عشوائي:</h3>
+      <p style="font-size: 18px; color: #a1260d; margin-top: 3px;">
+  لتغيير المواضع اضغط زر عرض النتائج مرة أخرى
+</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>رقم<br>الجزء</th>
+            <th>رقم<br>الموضع</th>
+            <th>اسم<br>الموضع</th>
+            <th>رقم<br>الصفحة</th>
+            <th>صورة<br>الموضع</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <div class="designer" style="margin-top: 20px; text-align:center; font-size:16px; color:#a1260d; font-weight:bold;">
+      <p style="margin:2px 0;">تصميم: علي الدوايه-محمد الروسان</p>
+      <p style="margin:2px 0;">جمعية المحافظة على القرآن الكريم</p>
+      <p style="margin:2px 0;">للتواصل (whatsapp): <a href="https://wa.me/+962788398094" target="_blank" style="color:#a1260d;">+962788398094</a></p>
+    </div>
+    <p id="user-counter" style="font-size:22px; color:#a1260d; font-weight:bold; margin-top:8px;">عدد الزوار: ...</p>
+  </div>
+</div>
+
+<script>
+let imageData = {};  
+google.script.run.withSuccessHandler(data => { imageData = data; renderParts(); }).getAllImageData();
+google.script.run.withSuccessHandler(count => { document.getElementById('user-counter').textContent = "عدد الزوار: " + count; }).getUsersCount();
+
+function renderParts() {
+  const tbody = document.querySelector('#parts-container tbody');
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  let tr = null;
+
+  for (let i = 1; i <= 30; i++) {
+    // كل 3 أجزاء نبدأ صف جديد
+    if ((i - 1) % 3 === 0) {
+      tr = document.createElement('tr');
+      tbody.appendChild(tr);
+    }
+
+    const td = document.createElement('td');
+
+    const partBox = document.createElement('div');
+    partBox.className = 'part-box';
+    partBox.textContent = i;
+    partBox.onclick = () => togglePartSelection(partBox, i);
+
+    td.appendChild(partBox);
+    tr.appendChild(td);
+  }
+
+  tr.appendChild(tdLeft);
+  tr.appendChild(tdRight);
+  tbody.appendChild(tr);
+}
+
+function togglePartSelection(box, value){
+  box.classList.toggle("selected");
+  updateSavedParts();
+}
+
+function getSelectedParts(){
+  return Array.from(document.querySelectorAll('.part-box.selected')).map(b => parseInt(b.textContent));
+}
+
+function updateSavedParts(){
+  const selected = getSelectedParts();
+  const requiredStr = document.getElementById('savedPartsDropdown').value;
+  const required = parseInt(requiredStr, 10);
+  const warningBox = document.getElementById('warning-box');
+
+  if(required && selected.length !== required){
+    warningBox.style.display = "block";
+    warningBox.textContent = `⚠️ العدد غير مطابق: المطلوب ${required} – المحدد ${selected.length}`;
+  } else { 
+    warningBox.style.display = "none"; 
+  }
+
+  const numPartsDropdown = document.getElementById('numParts');
+  let autoValue = "";
+
+  switch(required){
+    case 5: autoValue = 3; break;
+    case 10: autoValue = 5; break;
+    case 15: autoValue = 8; break;
+    case 20: autoValue = 10; break;
+    case 25: autoValue = 13; break;
+    case 30: autoValue = 15; break;
+  }
+
+  if(autoValue !== ""){
+    numPartsDropdown.value = autoValue;
+  }
+}
+
+function toggleParts(start,end,btnId){
+  const boxes = document.querySelectorAll('.part-box');
+  const btn = document.getElementById(btnId);
+  const allSelected = Array.from(boxes).every(b => b.classList.contains("selected"));
+
+  if(allSelected){
+    boxes.forEach(b => b.classList.remove("selected"));
+    btn.textContent = "تحديد الكل";
+    btn.className="sub-btn select";
+  } else {
+    boxes.forEach(b => b.classList.add("selected"));
+    btn.textContent = "إلغاء تحديد الكل";
+    btn.className="sub-btn deselect";
+  }
+
+  updateSavedParts();
+}
+
+function selectRandomParts() {
+  const numParts = parseInt(document.getElementById('numParts').value) || 1;
+  const selected = getSelectedParts();
+  if (selected.length === 0) { alert("الرجاء اختيار أجزاء أولاً."); return; }
+
+  const required = parseInt(document.getElementById('savedPartsDropdown').value);
+  if (required && selected.length !== required) { 
+    alert(`العدد المحدد (${selected.length}) لا يطابق العدد المطلوب (${required})`); 
+    return; 
+  }
+
+  const shuffled = selected.sort(() => 0.5 - Math.random());
+  const chosen = shuffled.slice(0, numParts).sort((a, b) => a - b);
+  const tbody = document.getElementById('results-body'); 
+  tbody.innerHTML = "";
+
+  const numPositions = parseInt(document.getElementById('numPositions').value) || 1;
+
+  chosen.forEach(part => {
+    const tr = document.createElement('tr');
+    const tdPart = document.createElement('td'); 
+    tdPart.textContent = part;
+
+    const positions = [];
+
+    if (numPositions === 1) {
+      positions.push(Math.floor(Math.random() * 40) + 1);
+    } else if (numPositions === 2) {
+      positions.push(Math.floor(Math.random() * 20) + 1);
+      positions.push(Math.floor(Math.random() * 20) + 21);
+    } else if (numPositions === 3) {
+      positions.push(Math.floor(Math.random() * 40) + 1);
+      positions.push(Math.floor(Math.random() * 20) + 1);
+      positions.push(Math.floor(Math.random() * 20) + 21);
+    }
+
+    const tdPositions = document.createElement('td');
+    const tdNames = document.createElement('td');
+    const tdPages = document.createElement('td');
+    const tdImages = document.createElement('td');
+
+    tdPositions.style.whiteSpace = 'pre-line';
+    tdNames.style.whiteSpace = 'pre-line';
+    tdPages.style.whiteSpace = 'pre-line';
+    tdImages.style.whiteSpace = 'pre-line';
+
+    positions.forEach(pos => {
+      tdPositions.textContent += pos + '\n';
+      const key = String(part).padStart(2, '0') + String(pos).padStart(2, '0');
+      const data = imageData[key];
+      tdNames.textContent += (data ? data.name : "-") + '\n';
+      tdPages.textContent += (data ? data.page : "-") + '\n';
+
+      const btn = document.createElement('button');
+      btn.textContent = "صورة الموضع";
+      btn.className = "image-btn";
+      btn.style.display = "block";
+      btn.style.marginBottom = "3px";
+      btn.onclick = () => { if(data && data.url){ window.open(data.url, '_blank'); } else { alert("لا توجد صورة متاحة."); } };
+      tdImages.appendChild(btn);
+    });
+
+    tr.appendChild(tdPart); 
+    tr.appendChild(tdPositions); 
+    tr.appendChild(tdNames); 
+    tr.appendChild(tdPages); 
+    tr.appendChild(tdImages);
+    tbody.appendChild(tr);
+  });
+}
+
+function clearResults(){ document.getElementById('results-body').innerHTML = ""; }
+function printTable(){ 
+  const divContents = document.getElementById("random-selection").innerHTML; 
+  const printWindow = window.open('', '', 'height=800,width=1000'); 
+  printWindow.document.write('<html><head><title>طباعة النتائج</title></head><body>'); 
+  printWindow.document.write(divContents); 
+  printWindow.document.write('</body></html>'); 
+  printWindow.document.close(); 
+  printWindow.print(); 
+}
+</script>
+
 </body>
 </html>
